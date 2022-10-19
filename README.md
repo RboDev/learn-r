@@ -1,2 +1,6 @@
-# learn-r
-Learning R
+# Learn R
+
+
+  - [ ] https://www.datacamp.com/tracks/r-programmer
+  - [ ] 
+  - [ ] 

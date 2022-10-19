@@ -39,5 +39,5 @@ vignettes/*.pdf
 .Renviron
 
 # ignore the generated output
-output/
-graphics/
+# output/
+# graphics/

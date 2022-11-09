@@ -25,34 +25,11 @@ unzip("req.zip")
 
 # Full file
 xml_file <- "PrixCarburants_instantane.xml"
-# Shorter file
-xml_file <- "PrixCarburants_short.xml"
+# or select small file
+# xml_file <- "PrixCarburants_short.xml"
 
 # ==== parse XML ====
-library(XML)
 
-doc <- xmlTreeParse(xml_file)
-(pdv <- doc$doc$children$pdv_liste[[1]])
-
-# Get PDV attributes
-xmlAttrs(pdv)
-
-# Get PDV fuel prices
-xmlChildren(pdv)
-
-# ----
-doc <- xmlParse(xml_file)
-pdvs <- getNodeSet(doc, "/pdv_liste//pdv")
-
-xmlToDataFrame(nodes=pdvs)  
-# ! works only for very simple data structures (not nested)
-
-# list of PDV Ids
-(ids <- sapply(pdvs, function(el) xmlGetAttr(el, "id")))
-
-# TODO: parse function to build the data frame.
-
-# ==== parse XML2 ====
 library(xml2)
 library(purrr)
 library(dplyr)
@@ -65,7 +42,7 @@ xml_name(xml_doc)
 
 # ---- Single PDV to DF ----
 
-(pdv <- xml_find_first(xml_doc, ".//pdv"))
+(pdv <- xml_find_first(xml_doc, ".//pdv[prix]"))
 
 parse_pdv <- function(pdv) {
   
@@ -89,14 +66,20 @@ parse_pdv <- function(pdv) {
   bind_cols(df_pdv,df_fuel_price)
 }
 
+# check data frame for a single PDV
+(parse_pdv(pdv))
+
 # ---- All PDV to DF ----
 
-# find all the pdv
-pdvs <- xml_find_all(xml_doc, "./pdv")
+# find all the pdv that have some prices
+# some station do not have any <prix/>
+pdvs <- xml_find_all(xml_doc, "./pdv[prix]")
 
 df <- pdvs |>
   map(parse_pdv) |>
   bind_rows()
 
+#TODO: this is super slow !!!
 
+head(df)
 
